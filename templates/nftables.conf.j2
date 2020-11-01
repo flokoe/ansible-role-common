@@ -1,0 +1,39 @@
+#!/usr/sbin/nft -f
+{{ ansible_managed_custom -}}
+
+flush ruleset
+
+table inet filter {
+  chain input {
+    # Drop every incomming connection
+    type filter hook input priority 50; policy drop;
+
+    iif lo accept comment "Accept any localhost traffic"
+    ct state invalid drop comment "Drop invalid connections"
+    ct state established,related accept comment "Accept traffic originated from us"
+
+    tcp dport ssh accept comment "Accept SSH on port 22"
+
+    tcp dport { http, https } accept comment "Accept HTTP (80) and HTTPS (443)"
+  }
+
+  chain forward {
+    # Drop everything forwarded to us. We do not forward.
+    type filter hook forward priority 50; policy drop;
+
+    # Make exception for packets that are marked with 1 (docker)
+    mark 1 accept
+  }
+
+  chain output {
+    # Accept every outbound connection
+    type filter hook output priority 50; policy accept;
+  }
+}
+
+table ip filter {
+  chain DOCKER-USER {
+    # Mark docker traffic with 1
+    mark set 1
+  }
+}
