@@ -38,6 +38,27 @@ None
     - flokoe.common
 ```
 
+## Testing
+
+If you add new functionality, make sure to write appropriate tests as well.
+
+To install all required test dependencies in a local development environment you can execute the following:
+
+```bash
+# If not existent
+python3 -m venv env
+
+source env/bin/activate
+
+pip3 install --upgrade -r requirements.txt
+```
+
+Run all tests:
+
+```bash
+molecule test
+```
+
 ## Author Information
 
 Florian Köhler
