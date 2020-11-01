@@ -40,8 +40,10 @@
     - lsb-release
     - dnsutils
     - pigz
+    - fail2ban
     - locales
     - dbus
+    - nftables
 
 - name: Enable and start dbus
   service:
@@ -93,3 +95,42 @@
     group: root
     mode: '440'
     validate: /usr/sbin/visudo -csf %s
+
+- name: Ensure sshd config exists
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '644'
+    validate: /usr/sbin/sshd -tf %s
+  notify: ssh reload
+
+- name: Set alternatives for iptables to use nftables
+  alternatives:
+    name: "{{ item }}"
+    path: "/usr/sbin/{{ item }}-nft"
+  loop:
+    - arptables
+    - ebtables
+    - ip6tables
+    - iptables
+  tags: nft
+
+- name: Ensure nftables config exists
+  template:
+    src: nftables.conf.j2
+    dest: /etc/nftables.conf
+    owner: root
+    group: root
+    mode: '644'
+    validate: /usr/sbin/nft -cf %s
+  notify: nftables restart
+  tags: nft
+
+- name: Enable and start nftables
+  service:
+    name: nftables
+    state: started
+    enabled: true
+  tags: nft
