@@ -1,0 +1,21 @@
+---
+
+galaxy_info:
+  role_name: common
+  author: Florian Köhler
+  description: Common role for all systems to configure basic setup
+
+  license: MIT
+
+  min_ansible_version: 2.9
+
+  platforms:
+    - name: Debian
+      versions:
+        - buster
+
+  galaxy_tags:
+    - system
+    - common
+
+dependencies: []
