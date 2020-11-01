@@ -1,0 +1,95 @@
+---
+- name: Make python3 default python interpreter
+  alternatives:
+    name: python
+    link: /usr/bin/python
+    path: /usr/bin/python3
+
+- name: Install basic packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  tags: apt
+  loop:
+    - aptitude
+    - apt-transport-https
+    - gpg
+    - sudo
+    - vim
+    - vim-nox
+    - editorconfig
+    - tzdata
+    - bash
+    - bash-completion
+    - htop
+    - zip
+    - unzip
+    - git
+    - pciutils
+    - rsync
+    - wget
+    - curl
+    - screen
+    - lsof
+    - iotop
+    - ca-certificates
+    - mlocate
+    - psmisc
+    - ncdu
+    - telnet
+    - lsb-release
+    - dnsutils
+    - pigz
+    - locales
+    - dbus
+
+- name: Enable and start dbus
+  service:
+    name: dbus
+    state: started
+    enabled: true
+
+- name: Set timezone
+  timezone:
+    name: Europe/Berlin
+
+- name: Enable and start systemd-timesyncd
+  service:
+    name: systemd-timesyncd
+    state: restarted
+    enabled: true
+  notify: restart cron
+  changed_when: false
+
+- name: Ensure all needed locales exist
+  locale_gen:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - en_US.UTF-8
+    - de_DE.UTF-8
+
+# - name: Ensure LANG, LANGUAGE and LC_COLLATE are set
+#   command: localectl set-locale LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_COLLATE
+
+- name: Ensure that vim is set as default editor
+  alternatives:
+    name: editor
+    path: /usr/bin/vim
+
+- name: Ensure auto update config exists
+  template:
+    src: 99z_auto_update.conf.j2
+    dest: /etc/apt/apt.conf.d/99z_auto_update.conf
+    owner: root
+    group: root
+    mode: '644'
+
+- name: Ensure general sudo config exists
+  template:
+    src: 99_general_demv_config.j2
+    dest: /etc/sudoers.d/99_general_demv_config
+    owner: root
+    group: root
+    mode: '440'
+    validate: /usr/sbin/visudo -csf %s
