@@ -1,0 +1,15 @@
+{{ ansible_managed_custom -}}
+
+# Only allow invokation from a real tty not cron or cgi-bin scripts.
+# Avoid logging password in cleartext when using sudo over ssh
+# This option is temporarily disabled because of incompatibility with molecule
+Defaults  requiretty
+
+# Prevent malicious code to run even though the main process was finished.
+Defaults  use_pty
+
+# Use separate log file instead of login to syslog.
+# Defaults  logfile="/var/log/sudo.log"
+
+# Insult users when entering a wrong password. ;)
+Defaults  insults
