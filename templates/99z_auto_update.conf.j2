@@ -1,0 +1,24 @@
+{{ ansible_managed_custom -}}
+
+# Allow to update apt cache.
+APT::Periodic::Update-Package-Lists "1";
+
+# Allow to download upgradable packages.
+APT::Periodic::Download-Upgradeable-Packages "1";
+
+# Disallow unattanded upgrades.
+APT::Periodic::Unattended-Upgrade "0";
+
+# Allow only certain update origins
+# Needs to be checked
+# Unattended-Upgrade::Allowed-Origins
+# Unattended-Upgrade::Package-Blacklist
+
+# Only send mail if problems occur.
+Unattended-Upgrade::MailOnlyOnError "true";
+
+# Send mail to the following address if problems occur.
+Unattended-Upgrade::Mail "admin@demv.de";
+
+# Log to syslog.
+# Unattended-Upgrade::SyslogEnable "false";
